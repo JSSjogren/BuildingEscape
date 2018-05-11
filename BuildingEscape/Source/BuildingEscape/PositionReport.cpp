@@ -20,7 +20,6 @@ void UPositionReport::BeginPlay()
 {
 	Super::BeginPlay();
     
-//    FVector ObjectPosVector =
     FString ObjectName = GetOwner() -> GetName();
     FString ObjectPos = GetOwner() -> GetTransform().GetLocation().ToString();
 	// ...
