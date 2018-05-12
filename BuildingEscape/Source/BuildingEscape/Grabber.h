@@ -50,5 +50,8 @@ private:
     FHitResult GetFirstPhysicsBodyInReach() const;
     
     //Return the end point of the line-trace
-    FVector CalculateLineTraceEnd();
+    FVector CalculateLineTraceEnd() const;
+    
+    //Return the start point of the line-trace
+    FVector CalculateLineTraceStart() const;
 };

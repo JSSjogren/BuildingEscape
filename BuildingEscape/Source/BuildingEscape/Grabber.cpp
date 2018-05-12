@@ -42,11 +42,7 @@ void UGrabber::FindPhysicsHandleComponent()
 {
     ///Look for attached physics handle
     PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-    if (PhysicsHandle)
-    {
-        ///Found PhysicsHandle
-    }
-    else
+    if (PhysicsHandle == nullptr)
     {
         UE_LOG(LogTemp, Error, TEXT("Physics Handle was nullptr for actor %s"), *GetOwner()->GetName());
     }
@@ -85,34 +81,42 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
     
     if (PhysicsHandle->GrabbedComponent)
     {
-        FVector LineTraceEnd = CalculateLineTraceEnd();
-        PhysicsHandle->SetTargetLocation(LineTraceEnd);
+        PhysicsHandle->SetTargetLocation(CalculateLineTraceEnd());
     }
 }
 
-FVector UGrabber::CalculateLineTraceEnd()
+FVector UGrabber::CalculateLineTraceEnd() const
 {
-    FVector OutLocation;
-    FRotator OutRotation;
+    FVector PlayerViewPointLocation;
+    FRotator PlayerViewPointRotation;
     /// Get player viewpoint during this tick
-    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT OutLocation, OUT OutRotation);
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
     
     /// Calculating end of line trace
-    FVector LineTraceEnd = OutLocation + OutRotation.Vector() * Reach;
+    return PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+}
+
+FVector UGrabber::CalculateLineTraceStart() const
+{
+    FVector PlayerViewPointLocation;
+    FRotator PlayerViewPointRotation;
+    /// Get player viewpoint during this tick
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+    
+    /// Returning OutLocation;
+    return PlayerViewPointLocation;
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
-    FVector LineTraceEnd = CalculateLineTraceEnd();
-    /// Creating FCollisionQueryParams
-    FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
-    
     /// Ray-cast to reach distance
     FHitResult HitResult;
+    FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
+    
     GetWorld()->LineTraceSingleByObjectType(
                                             HitResult,
-                                            OutLocation,
-                                            LineTraceEnd,
+                                            CalculateLineTraceStart(),
+                                            CalculateLineTraceEnd(),
                                             FCollisionObjectQueryParams(ECC_PhysicsBody),
                                             TraceParameters
                                             );
