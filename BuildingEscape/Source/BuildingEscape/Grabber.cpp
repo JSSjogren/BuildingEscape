@@ -6,16 +6,16 @@
 /// Sets default values for this component's properties
 UGrabber::UGrabber()
 {
-	/// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	/// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+    /// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+    /// off to improve performance if you don't need them.
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 
 /// Called when the game starts
 void UGrabber::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
     FindPhysicsHandleComponent();
     SetupInputComponent();
 }
@@ -59,22 +59,46 @@ void UGrabber::Grab()
     /// LINE TRACE and see if we reach any actors with physics body collision channel set
     
     ///If we hit something then try and attach a physics handle
-    //TODO Attach Physics handle
+    auto HitResult = GetFirstPhysicsBodyInReach();
+    auto ComponentToGrab = HitResult.GetComponent();
+    auto ActorHit = HitResult.GetActor();
+    
+    /// Attach Physics handle
+    if (ActorHit)
+    {
+        PhysicsHandle->GrabComponentAtLocationWithRotation(
+                                                           ComponentToGrab,
+                                                           NAME_None,
+                                                           ComponentToGrab->GetOwner()->GetActorLocation(),
+                                                           ComponentToGrab->GetOwner()->GetActorRotation());
+    }
 }
 
 void UGrabber::Release()
 {
     UE_LOG(LogTemp, Warning, TEXT("Released!"));
     
-    //TODO Release physics handle
+    ///Release physics handle
+    PhysicsHandle->ReleaseComponent();
 }
 
 /// Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    GetFirstPhysicsBodyInReach();
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    
+    if (PhysicsHandle->GrabbedComponent)
+    {
+        FVector OutLocation;
+        FRotator OutRotation;
+        /// Get player viewpoint during this tick
+        GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT OutLocation, OUT OutRotation);
+        
+        /// Calculating end of line trace
+        FVector LineTraceEnd = OutLocation + OutRotation.Vector() * Reach;
+        
+        PhysicsHandle->SetTargetLocation(LineTraceEnd);
+    }
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
@@ -83,8 +107,6 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
     FRotator OutRotation;
     /// Get player viewpoint during this tick
     GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT OutLocation, OUT OutRotation);
-    
-    /// UE_LOG(LogTemp, Warning, TEXT("Location: %s and Rotation: %s"), *outLocation.ToString(), *outRotation.ToString());
     
     /// Calculating end of line trace
     FVector LineTraceEnd = OutLocation + OutRotation.Vector() * Reach;
@@ -109,5 +131,7 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
         FString ActorName = HitResult.GetActor()->GetName();
         UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *ActorName);
     }
+    
+    return HitResult;
 }
 
