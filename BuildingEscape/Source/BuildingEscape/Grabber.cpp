@@ -54,11 +54,9 @@ void UGrabber::FindPhysicsHandleComponent()
 
 void UGrabber::Grab()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Grab pressed"));
-    
     /// LINE TRACE and see if we reach any actors with physics body collision channel set
+    /// If we hit something then try and attach a physics handle
     
-    ///If we hit something then try and attach a physics handle
     auto HitResult = GetFirstPhysicsBodyInReach();
     auto ComponentToGrab = HitResult.GetComponent();
     auto ActorHit = HitResult.GetActor();
@@ -76,8 +74,6 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Released!"));
-    
     ///Release physics handle
     PhysicsHandle->ReleaseComponent();
 }
@@ -89,19 +85,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
     
     if (PhysicsHandle->GrabbedComponent)
     {
-        FVector OutLocation;
-        FRotator OutRotation;
-        /// Get player viewpoint during this tick
-        GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT OutLocation, OUT OutRotation);
-        
-        /// Calculating end of line trace
-        FVector LineTraceEnd = OutLocation + OutRotation.Vector() * Reach;
-        
+        FVector LineTraceEnd = CalculateLineTraceEnd();
         PhysicsHandle->SetTargetLocation(LineTraceEnd);
     }
 }
 
-FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
+FVector UGrabber::CalculateLineTraceEnd()
 {
     FVector OutLocation;
     FRotator OutRotation;
@@ -110,7 +99,11 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
     
     /// Calculating end of line trace
     FVector LineTraceEnd = OutLocation + OutRotation.Vector() * Reach;
-    
+}
+
+FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
+{
+    FVector LineTraceEnd = CalculateLineTraceEnd();
     /// Creating FCollisionQueryParams
     FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
     
@@ -123,15 +116,6 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
                                             FCollisionObjectQueryParams(ECC_PhysicsBody),
                                             TraceParameters
                                             );
-    
-    /// See what we 'hit'
-    AActor * ActorHit = HitResult.GetActor();
-    if (ActorHit)
-    {
-        FString ActorName = HitResult.GetActor()->GetName();
-        UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *ActorName);
-    }
-    
     return HitResult;
 }
 
