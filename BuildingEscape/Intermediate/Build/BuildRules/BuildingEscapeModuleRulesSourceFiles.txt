@@ -1,0 +1,3 @@
+C:\Users\Jarod\OneDrive - University of Georgia\Documents\Unreal Projects\BuildingEscape\BuildingEscape\Source\BuildingEscape\BuildingEscape.Build.cs
+C:\Users\Jarod\OneDrive - University of Georgia\Documents\Unreal Projects\BuildingEscape\BuildingEscape\Source\BuildingEscape.Target.cs
+C:\Users\Jarod\OneDrive - University of Georgia\Documents\Unreal Projects\BuildingEscape\BuildingEscape\Source\BuildingEscapeEditor.Target.cs
