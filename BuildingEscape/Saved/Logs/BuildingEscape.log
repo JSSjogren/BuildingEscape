@@ -426,3 +426,8 @@ LogInit: Object subsystem initialized
 [2019.01.28-13.37.07:293][681]LogWorld: Bringing up level for play took: 0.002937
 [2019.01.28-13.37.07:301][681]LogContentBrowser: Native class hierarchy updated for 'MovieSceneCapture' in 0.0016 seconds. Added 11 classes and 0 folders.
 [2019.01.28-13.37.07:303][681]PIE: Play in editor start time for /Game/Maps/UEDPIE_0_NewMap -0.691
+[2019.01.28-13.46.39:301][745]LogSavePackage: Save=66.81ms
+[2019.01.28-13.46.39:302][745]LogSavePackage: Moving '../../../../../../Users/Jarod/OneDrive - University of Georgia/Documents/Unreal Projects/BuildingEscape/BuildingEscape/Saved/NewMap_Auto1FC0BD99244E910A6EBA5D69BC307EE27.tmp' to '../../../../../../Users/Jarod/OneDrive - University of Georgia/Documents/Unreal Projects/BuildingEscape/BuildingEscape/Saved/Autosaves/Game/Maps/NewMap_Auto1.umap'
+[2019.01.28-13.46.39:312][745]LogSavePackage: Display: Finished SavePackage ../../../../../../Users/Jarod/OneDrive - University of Georgia/Documents/Unreal Projects/BuildingEscape/BuildingEscape/Saved/Autosaves/Game/Maps/NewMap_Auto1.umap
+[2019.01.28-13.46.39:320][745]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/Maps/NewMap' took 0.161
+[2019.01.28-13.46.39:320][745]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.161
